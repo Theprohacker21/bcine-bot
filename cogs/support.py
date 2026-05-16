@@ -184,14 +184,13 @@ class Support(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="support", description="Post the support system embed")
-    @app_commands.checks.has_permissions(administrator=True)
-    async def support(self, interaction: discord.Interaction):
+    async def post_support_embed(self):
+        """Post the support system embed to the designated channel"""
         target_channel_id = 1504781109681193001
         
-        channel = interaction.client.get_channel(target_channel_id)
+        channel = self.bot.get_channel(target_channel_id)
         if not channel:
-            await interaction.response.send_message(f"Channel {target_channel_id} not found.", ephemeral=True)
+            print(f"Support channel {target_channel_id} not found.")
             return
         
         embed = discord.Embed(
@@ -209,9 +208,15 @@ class Support(commands.Cog):
         
         try:
             await channel.send(embed=embed, view=view)
-            await interaction.response.send_message("Support system posted!", ephemeral=True)
+            print("Support system embed posted successfully!")
         except Exception as e:
-            await interaction.response.send_message(f"Error posting support system: {str(e)}", ephemeral=True)
+            print(f"Error posting support system: {str(e)}")
+
+    @app_commands.command(name="support", description="Post the support system embed")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def support(self, interaction: discord.Interaction):
+        await self.post_support_embed()
+        await interaction.response.send_message("Support system posted!", ephemeral=True)
 
 
 async def setup(bot):
